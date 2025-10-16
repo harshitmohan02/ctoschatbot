@@ -1,47 +1,40 @@
 /* App.css */
+/* General page and container styles remain the same */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
 }
-/* --- MODIFIED: This container now centers its content --- */
 .page-container {
   height: 100vh;
   width: 100vw;
-  background-color: #f0f2f5; /* A light grey background for the page */
+  background-color: #f0f2f5;
   font-family: Arial, sans-serif;
-  
-  /* These new properties will center the chat window vertically and horizontally */
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 14px;
 }
-
-/* --- MODIFIED: This is now the centered chat window, no longer fixed --- */
 .app-container {
   width: 100%; 
-  height: 100%;
+  max-width: 900px;
+  height: 95vh;
+  max-height: 1000px;
   background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1); /* Slightly softer shadow */
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Crucial to contain the rounded corners */
+  overflow: hidden;
 }
-
 .app-header {
-  background-color: #ffffff; /* User changed this from PwC Black */
+  background-color: #ffffff;
   padding: 10px 20px;
-  flex-shrink: 0; /* Prevents the header from shrinking */
+  flex-shrink: 0;
   border-bottom: 1px solid #f0f0f0;
 }
-
-.pwc-logo {
-  height: 40px;
-}
-
+.pwc-logo { height: 40px; }
 .chat-container {
   flex-grow: 1;
   display: flex;
@@ -49,8 +42,6 @@ html, body {
   overflow: hidden;
   width: 100%;
 }
-
-/* Messages Area */
 .messages {
   flex-grow: 1;
   overflow-y: auto;
@@ -60,43 +51,74 @@ html, body {
   gap: 15px;
 }
 
+/* Message Styling */
 .message {
-  padding: 10px 15px;
+  padding: 12px 18px;
   border-radius: 18px;
   max-width: 85%; 
-  line-height: 1.4;
+  line-height: 1.5;
   word-wrap: break-word;
 }
-
 .user-message {
-  background-color: #e87722; /* PwC Orange */
+  background-color: #e87722;
   color: white;
   border-top-right-radius: 5px;
   align-self: flex-end;
 }
-
 .bot-message {
   background-color: #f1f1f1;
   color: #333;
   border-top-left-radius: 5px;
   align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* NEW: Allow bot messages with tables to be wider */
+.bot-message.wide {
+  max-width: 95%;
+  width: fit-content;
+}
+.message-text {
+  white-space: pre-wrap;
 }
 
-.bot-message.error {
-  background-color: #ffebee;
-  color: #c62828;
+/* --- NEW: Data Table Styling --- */
+.table-container {
+  max-height: 400px;
+  overflow-x: auto;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.results-table th, .results-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  white-space: nowrap;
+}
+.results-table th {
+  background-color: #f9f9f9;
   font-weight: bold;
+  position: sticky;
+  top: 0;
+  text-transform: capitalize;
+}
+.results-table tr:last-child td {
+  border-bottom: none;
+}
+.results-table tr:hover {
+  background-color: #f5f5f5;
 }
 
-.chart-container {
-    position: relative;
-    padding: 10px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
 
-/* Input Area */
+/* Input Area and Buttons */
 .input-container {
   display: flex;
   padding: 15px;
@@ -104,149 +126,52 @@ html, body {
   background-color: #f9f9f9;
   flex-shrink: 0;
 }
-
 .chat-input {
-  flex-grow: 1;
-  padding: 10px 15px;
-  border: 1px solid #ccc;
-  border-radius: 25px;
-  margin-right: 10px;
-  font-size: 14px;
-  outline: none;
+  flex-grow: 1; padding: 10px 15px; border: 1px solid #ccc;
+  border-radius: 25px; margin-right: 10px; font-size: 14px; outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-
 .chat-input:focus {
   border-color: #e87722;
   box-shadow: 0 0 5px rgba(232, 119, 34, 0.5);
 }
-
 .send-button {
-  background-color: #e87722;
-  color: white;
-  border: none;
-  padding: 0 25px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
+  background-color: #e87722; color: white; border: none; padding: 0 25px;
+  border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: bold;
   transition: background-color 0.2s ease;
 }
+.send-button:hover:not(:disabled) { background-color: #d46a1e; }
+.send-button:disabled { background-color: #f3a970; cursor: not-allowed; }
 
-.send-button:hover:not(:disabled) {
-  background-color: #d46a1e;
+/* Suggestion Prompts */
+.suggestion-prompts-container {
+  display: flex; flex-direction: column; align-items: flex-start;    
+  gap: 12px; padding: 15px 20px; border-top: 1px solid #e0e0e0;
 }
-
-.send-button:disabled {
-  background-color: #f3a970;
-  cursor: not-allowed;
+.suggestion-title {
+  font-size: 14px; font-weight: bold; color: #555; margin: 0;
+}
+.prompts-wrapper {
+  display: flex; flex-wrap: wrap; justify-content: flex-start;
+  gap: 8px; width: 100%;
+}
+.suggestion-prompt {
+  background-color: #f7f7f7; border: 1px solid #ddd; border-radius: 18px;
+  padding: 8px 16px; font-size: 14px; color: #333; cursor: pointer;
+  transition: all 0.2s ease-in-out; text-align: left;
+}
+.suggestion-prompt:hover {
+  background-color: #f0f0f0; border-color: #e87722; color: #000;
+  transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Typing Indicator */
-.typing-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-}
-
+.typing-indicator { display: flex; align-items: center; padding: 10px; }
 .typing-indicator span {
-  height: 8px;
-  width: 8px;
-  background-color: #e87722; /* PwC Orange */
-  border-radius: 50%;
-  display: inline-block;
-  margin: 0 4px;
-  animation: bounce 1.4s infinite both;
+  height: 8px; width: 8px; background-color: #e87722; border-radius: 50%;
+  display: inline-block; margin: 0 4px; animation: bounce 1.4s infinite both;
 }
-
-.typing-indicator span:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes bounce {
-  0%, 80%, 100% {
-    transform: scale(0);
-  }
-  40% {
-    transform: scale(1.0);
-  }
-}
-
-/* --- MODIFIED: Suggestion Prompts Styles (Left-aligned & Numbered) --- */
-
-/* Main container for the whole suggestions block */
-.suggestion-prompts-container {
-  display: flex;
-  flex-direction: column; 
-  /* CHANGED: Aligns the title and button wrapper to the left */
-  align-items: flex-start;    
-  gap: 12px;              
-  padding: 15px 20px;
-  border-top: 1px solid #e0e0e0;
-  background-color: #ffffff;
-}
-
-/* Style for the new title: "Here are the top 5 questions." */
-.suggestion-title {
-  font-size: 14px;
-  font-weight: bold;
-  color: #555;
-  margin: 0;
-}
-
-/* Wrapper just for the buttons */
-.prompts-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  /* CHANGED: Aligns buttons to the start (left) of the container */
-  justify-content: flex-start;
-  gap: 8px;
-  width: 100%;
-  
-  /* ADDED: Initializes a counter for numbering the prompts */
-  counter-reset: prompt-counter;
-}
-
-/* Individual prompt button styling */
-.suggestion-prompt {
-  background-color: #f7f7f7;
-  border: 1px solid #ddd;
-  border-radius: 18px;
-  padding: 8px 16px;
-  font-size: 14px;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  text-align: left;
-  
-  /* ADDED: Increments the counter for each prompt button */
-  counter-increment: prompt-counter;
-}
-
-/* ADDED: This new pseudo-element generates and styles the number */
-.suggestion-prompt::before {
-  /* This generates the content: "1. ", "2. ", etc. */
-  content: counter(prompt-counter) ". ";
-  font-weight: bold;
-  /* Using the PwC orange for the number makes it stand out */
-  color: #e87722; 
-  margin-right: 6px; /* Adds a little space after the number */
-}
-
-/* Hover effect to make them feel interactive */
-.suggestion-prompt:hover {
-  background-color: #f0f0f0;
-  border-color: #e87722;
-  color: #000;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
+.typing-indicator span:nth-child(1) { animation-delay: 0s; }
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
