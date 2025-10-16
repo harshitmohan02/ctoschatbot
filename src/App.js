@@ -74,7 +74,7 @@ function App() {
         "What was the share capital for 'E8 Ventures Sdn Bhd' in their latest financial year?",
     ];
 
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000/chat';
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://ctosusecase-fqhwgwfmdjebh4cv.southeastasia-01.azurewebsites.net/chat';
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
