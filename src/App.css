@@ -175,3 +175,17 @@ html, body {
 .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
 .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+/* --- NEW: Styling for links rendered by ReactMarkdown --- */
+.bot-message a {
+  color: #e87722; /* PwC Orange */
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: 1px solid #f3a970;
+  transition: color 0.2s, border-bottom-color 0.2s;
+}
+
+.bot-message a:hover {
+  color: #d46a1e; /* Darker orange on hover */
+  border-bottom-color: #d46a1e;
+}

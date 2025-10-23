@@ -1,11 +1,10 @@
-// App.js
+// src/App.js
 import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown'; // --- NEW: Import the markdown renderer
 import './App.css';
 import pwcLogo from './assets/pwc-logo1.png';
 
-// ChartJS imports are unchanged and can be kept for future use.
-
-// --- NEW ---: A component to render data in a clean, scrollable table
+// The Table component remains unchanged and is great for displaying data.
 function Table({ data }) {
     if (!data || data.length === 0) return null;
     const headers = Object.keys(data[0]);
@@ -17,7 +16,7 @@ function Table({ data }) {
                 </thead>
                 <tbody>
                     {data.map((row, i) => (
-                        <tr key={i}>{headers.map((h) => <td key={h}>{String(row[h])}</td>)}</tr>
+                        <tr key={i}>{headers.map((h) => <td key={h}>{String(row[h] ?? '')}</td>)}</tr>
                     ))}
                 </tbody>
             </table>
@@ -25,7 +24,7 @@ function Table({ data }) {
     );
 }
 
-// --- MODIFIED ---: Updated to handle table and plain text messages
+// --- MODIFIED: Updated to use ReactMarkdown to render bot messages ---
 function ChatMessage({ msg }) {
     if (msg.from === 'user') {
         return <div className="message user-message">{msg.text}</div>;
@@ -35,14 +34,19 @@ function ChatMessage({ msg }) {
     if (msg.isTable && msg.tableData) {
         return (
             <div className="message bot-message wide">
-                <div className="message-text">{msg.text}</div>
+                {/* The text part of the message is now rendered with markdown */}
+                <div className="message-text"><ReactMarkdown>{msg.text}</ReactMarkdown></div>
                 <Table data={msg.tableData} />
             </div>
         );
     }
     
-    // Default bot message (plain text)
-    return <div className="message bot-message"><div className="message-text">{msg.text}</div></div>;
+    // Default bot message (plain text, but now supports links via markdown)
+    return (
+        <div className="message bot-message">
+            <div className="message-text"><ReactMarkdown>{msg.text}</ReactMarkdown></div>
+        </div>
+    );
 }
 
 function SuggestionPrompts({ prompts, onPromptClick }) {
@@ -61,20 +65,23 @@ function SuggestionPrompts({ prompts, onPromptClick }) {
 }
 
 function App() {
-    const [messages, setMessages] = useState([{ from: 'bot', text: 'Welcome! I am your AI Assistant. How can I help you today?' }]);
+    const [messages, setMessages] = useState([{ from: 'bot', text: 'Welcome! I can answer questions about the provided financial data. How can I help?' }]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef(null);
 
-    // NEW: Updated suggestion prompts
+    // --- CHANGED: New prompts relevant to your Excel-only data source ---
+    // Please update these with real company names from your dummysource.xlsx file!
     const suggestionPrompts = [
-        "What is the total turnover for all companies in 2022?",
-        "Show the top 5 companies with the highest retained profits.",
-        "Download the financial report for Aerospace Technology Systems Corp Sdn Bhd",
-        "What was the share capital for 'E8 Ventures Sdn Bhd' in their latest financial year?",
+        "What was the revenue for Innovatech Solutions in 2023?",
+        "Show me the profit before tax for Alpha Corp in 2019.",
+        "Can I get the AFS for QuantumLeap Dynamics for 2023?",
+        "What are the principal activities of Apex Logistics Group?",
     ];
 
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://ctosusecase-fqhwgwfmdjebh4cv.southeastasia-01.azurewebsites.net/chat';
+    // --- CHANGED: Point this to your local backend for development ---
+    //const backendUrl = 'http://localhost:4000/chat';
+    const backendUrl = 'https://ctosusecase-fqhwgwfmdjebh4cv.southeastasia-01.azurewebsites.net/chat'; // Your production URL
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -84,7 +91,8 @@ function App() {
         if (!queryText.trim()) return;
 
         const userMessage = { from: 'user', text: queryText };
-        const historyForBackend = messages.map(msg => ({ role: msg.from === 'user' ? 'user' : 'assistant', content: msg.text }));
+        // We no longer need to pass the full history text, but it's harmless to keep.
+        const historyForBackend = messages.slice(1).map(msg => ({ role: msg.from === 'user' ? 'user' : 'assistant', content: msg.text }));
 
         setMessages((prev) => [...prev, userMessage]);
         setInput('');
@@ -96,48 +104,20 @@ function App() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: queryText, history: historyForBackend }),
             });
+            
+            // --- SIMPLIFIED: We now ONLY expect JSON responses ---
+            // The entire logic for handling Excel blobs has been removed.
 
-            // --- NEW: DYNAMIC RESPONSE HANDLING (JSON or FILE) ---
-            const contentType = res.headers.get("content-type");
-            if (contentType && contentType.indexOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") !== -1) {
-                // This is an Excel file download
-                const blob = await res.blob();
-                const disposition = res.headers.get('content-disposition');
-                let filename = "financial-report.xlsx";
-                if (disposition && disposition.indexOf('attachment') !== -1) {
-                    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                    const matches = filenameRegex.exec(disposition);
-                    if (matches != null && matches[1]) {
-                        filename = matches[1].replace(/['"]/g, '');
-                    }
-                }
-                
-                // Create a link and trigger the download
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-                
-                // Add a confirmation message to the chat
-                setMessages((prev) => [...prev, { from: 'bot', text: `Your download for "${filename}" has started.` }]);
-
-            } else {
-                // This is a standard JSON chat response
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Server error');
-                
-                const botMessage = {
-                    from: 'bot',
-                    text: data.response,
-                    isTable: data.isTable || false,
-                    tableData: data.tableData || null,
-                };
-                setMessages((prev) => [...prev, botMessage]);
-            }
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Server error');
+            
+            const botMessage = {
+                from: 'bot',
+                text: data.response, // This text might contain markdown links
+                isTable: data.isTable || false,
+                tableData: data.tableData || null,
+            };
+            setMessages((prev) => [...prev, botMessage]);
 
         } catch (err) {
             setMessages((prev) => [...prev, { from: 'bot', text: `Sorry, an error occurred: ${err.message}` }]);
