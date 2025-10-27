@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactMarkdown from 'react-markdown'; // --- NEW: Import markdown renderer
+import ReactMarkdown from 'react-markdown'; // Import markdown renderer
 import './App.css';
 import pwcLogo from './assets/pwc-logo1.png';
 
-// The Table component remains unchanged and is great for displaying data.
+// Table component for displaying tabular data
 function Table({ data }) {
   if (!data || data.length === 0) return null;
   const headers = Object.keys(data[0]);
@@ -23,27 +23,29 @@ function Table({ data }) {
   );
 }
 
-// --- MODIFIED: Updated to use ReactMarkdown to render bot messages ---
+// Custom Link Renderer to open links in new tab
+function LinkRenderer(props) {
+  return <a href={props.href} target="_blank" rel="noopener noreferrer">{props.children}</a>;
+}
+
+// Chat message renderer
 function ChatMessage({ msg }) {
   if (msg.from === 'user') {
     return <div className="message user-message">{msg.text}</div>;
   }
 
-  // Bot message with a table
   if (msg.isTable && msg.tableData) {
     return (
       <div className="message bot-message wide">
-        {/* The text part of the message is now rendered with markdown */}
-        <div className="message-text"><ReactMarkdown>{msg.text}</ReactMarkdown></div>
+        <div className="message-text"><ReactMarkdown components={{ a: LinkRenderer }}>{msg.text}</ReactMarkdown></div>
         <Table data={msg.tableData} />
       </div>
     );
   }
 
-  // Default bot message (plain text, but now supports links via markdown)
   return (
     <div className="message bot-message">
-      <div className="message-text"><ReactMarkdown>{msg.text}</ReactMarkdown></div>
+      <div className="message-text"><ReactMarkdown components={{ a: LinkRenderer }}>{msg.text}</ReactMarkdown></div>
     </div>
   );
 }
@@ -64,7 +66,6 @@ function SuggestionPrompts({ prompts, onPromptClick }) {
 }
 
 function App() {
-  // Define the initial bot message once
   const initialBotMessage = {
     from: 'bot',
     text: 'Welcome! I can answer questions about the provided financial data. How can I help?'
@@ -75,7 +76,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // New prompts relevant to your Excel-only data source
   const suggestionPrompts = [
     "What was the revenue for Beta LLC in 2021?",
     "Show me the profit before tax for Alpha Corp in 2019.",
@@ -83,9 +83,9 @@ function App() {
     "What are the principal activities of Gamma Inc?",
   ];
 
-  // Backend URL
+  // Backend URL (production)
   // const backendUrl = 'http://localhost:4000/chat';
-  const backendUrl = 'https://ctosusecase-fqhwgwfmdjebh4cv.southeastasia-01.azurewebsites.net/chat'; // Your production URL
+  const backendUrl = 'https://ctosusecase-fqhwgwfmdjebh4cv.southeastasia-01.azurewebsites.net/chat';
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -107,18 +107,16 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: queryText, history: historyForBackend }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Server error');
 
       const botMessage = {
         from: 'bot',
-        text: data.response, // This text might contain markdown links
+        text: data.response, 
         isTable: data.isTable || false,
         tableData: data.tableData || null,
       };
       setMessages((prev) => [...prev, botMessage]);
-
     } catch (err) {
       setMessages((prev) => [...prev, { from: 'bot', text: `Sorry, an error occurred: ${err.message}` }]);
     } finally {
@@ -130,7 +128,7 @@ function App() {
   const sendMessage = () => sendQuery(input);
   const handleKeyPress = (e) => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } };
 
-  // Refresh function to reset the session
+  // Refresh session: clear messages back to initial
   const refreshSession = () => {
     setMessages([initialBotMessage]);
     setInput('');
