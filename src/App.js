@@ -73,10 +73,10 @@ function App() {
     // --- CHANGED: New prompts relevant to your Excel-only data source ---
     // Please update these with real company names from your dummysource.xlsx file!
     const suggestionPrompts = [
-        "What was the revenue for Innovatech Solutions in 2023?",
+        "What was the revenue for Beta LLC in 2021?",
         "Show me the profit before tax for Alpha Corp in 2019.",
-        "Can I get the AFS for QuantumLeap Dynamics for 2023?",
-        "What are the principal activities of Apex Logistics Group?",
+        "Can I get the AFS for Alpha Corp for 2023?",
+        "What are the principal activities of Gamma Inc?",
     ];
 
     // --- CHANGED: Point this to your local backend for development ---
