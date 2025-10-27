@@ -75,7 +75,7 @@ function App() {
     const suggestionPrompts = [
         "What was the revenue for Beta LLC in 2021?",
         "Show me the profit before tax for Alpha Corp in 2019.",
-        "Can I get the AFS for Alpha Corp for 2023?",
+        "Can I get the AFS for Alpha Corp for 2021?",
         "What are the principal activities of Gamma Inc?",
     ];
 
