@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/ctoschatbot/static/css/main.113aa262.css",
-    "main.js": "/ctoschatbot/static/js/main.1b96abe7.js",
+    "main.js": "/ctoschatbot/static/js/main.87af6c64.js",
     "static/js/453.867f1855.chunk.js": "/ctoschatbot/static/js/453.867f1855.chunk.js",
     "index.html": "/ctoschatbot/index.html",
     "main.113aa262.css.map": "/ctoschatbot/static/css/main.113aa262.css.map",
-    "main.1b96abe7.js.map": "/ctoschatbot/static/js/main.1b96abe7.js.map",
+    "main.87af6c64.js.map": "/ctoschatbot/static/js/main.87af6c64.js.map",
     "453.867f1855.chunk.js.map": "/ctoschatbot/static/js/453.867f1855.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.113aa262.css",
-    "static/js/main.1b96abe7.js"
+    "static/js/main.87af6c64.js"
   ]
 }
