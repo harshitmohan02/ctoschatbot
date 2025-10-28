@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -25,17 +25,25 @@ ChartJS.register(
   Legend
 );
 
-const ChartComponent = ({ config }) => {
-  const renderChart = () => {
-    const chartProps = {
-      data: config.data,
-      options: {
-        ...config.options,
-        maintainAspectRatio: false,
-        responsive: true,
-      }
-    };
+const ChartComponent = forwardRef(({ config }, ref) => {
+  const chartRef = useRef(null);
 
+  // Expose method to get canvas element to parent via ref
+  useImperativeHandle(ref, () => ({
+    getCanvas: () => chartRef.current?.canvas,
+  }));
+
+  const chartProps = {
+    ref: chartRef,
+    data: config.data,
+    options: {
+      ...config.options,
+      maintainAspectRatio: false,
+      responsive: true,
+    },
+  };
+
+  const renderChart = () => {
     switch (config.type.toLowerCase()) {
       case 'bar':
         return <Bar {...chartProps} />;
@@ -51,10 +59,10 @@ const ChartComponent = ({ config }) => {
   };
 
   return (
-    <div style={{ width: '100%', height: '300px', marginTop: '10px' }}>
+    <div style={{ width: '100%', height: '300px', marginTop: 10 }}>
       {renderChart()}
     </div>
   );
-};
+});
 
 export default ChartComponent;
